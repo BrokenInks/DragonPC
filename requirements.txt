@@ -31,7 +31,6 @@ pipreqs==0.4.10
 playsound==1.2.2
 PyInstaller==3.3.1
 pylint==2.6.0
-pypiwin32==223
 PyQt5==5.15.2
 PyQt5-sip==12.8.1
 PySide2==5.15.2
