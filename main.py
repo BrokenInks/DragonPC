@@ -20,10 +20,6 @@ from config import settings
 bot = commands.Bot(command_prefix = settings['prefix'])
 bot.remove_command( "help" )
 
-###########################
-#      Загрузка бота      #
-###########################
-
 print("Бот загружается...")
 
 @bot.event
@@ -36,43 +32,33 @@ async def on_ready():
 print (" Bot connected to discord")
 					
 def insert_returns(body):
-    # insert return stmt if the last expression is a expression statement
+ 
     if isinstance(body[-1], ast.Expr):
         body[-1] = ast.Return(body[-1].value)
         ast.fix_missing_locations(body[-1])
 
-    # for if statements, we insert returns into the body and the orelse
+
     if isinstance(body[-1], ast.If):
         insert_returns(body[-1].body)
         insert_returns(body[-1].orelse)
 
-    # for with blocks, again we insert returns into the body
+
     if isinstance(body[-1], ast.With):
         insert_returns(body[-1].body)
-#Права администратора на всякий случай
-#@bot.command(pass_context = True)
-#@commands.has_permissions(administrator = True)
-
-###########################
-#         Аватар          #
-###########################
 
 @bot.command(aliases = ["avatar", "Avatar", "Аватар"])
-async def аватар(ctx, *, avamember: discord.Member):
+async def avatar(ctx, *, avamember: discord.Member):
     emb = discord.Embed(title = f"Аватар {avamember.name}", colour = discord.Color.red())
     emb.set_image(url = avamember.avatar_url)
     await ctx.send(embed = emb)
 
-@аватар.error
+@avatar.error
 async def Avatar_error(ctx, error):
      if isinstance(error, commands.MissingRequiredArgument):
          emb = discord.Embed(title = f"Аватар {ctx.author.name}", colour = discord.Color.red())
          emb.set_image(url = ctx.author.avatar_url)
          await ctx.send(embed = emb)
 
-###########################
-#       Информация        #
-###########################
 
 @bot.command()
 async def info(ctx):
@@ -81,10 +67,6 @@ async def info(ctx):
     emb.add_field(name = "Основная:", value = f"Серверов: **{len(guilds)}**\nУчастников: **{len(set(bot.get_all_members()))}**")    # 1: Количество серверов, 2: количество уникальных участников на всех серверах
     emb.add_field(name = "Бот:", value = f"Задержка: **{int(bot.latency * 1000)} мс**") # Скорость соединения бота с API дискорда
     await ctx.send(embed = emb)
-
-###########################
-#         Сервер          #
-###########################
 
 @bot.command()
 async def server(ctx):
@@ -113,10 +95,6 @@ async def server(ctx):
 
 
 log = gateway.log
-
-###########################
-#       Идентицикая       #
-###########################
 
 async def identify(self):
     """Sends the IDENTIFY packet."""
@@ -165,21 +143,10 @@ async def identify(self):
 
 gateway.DiscordWebSocket.identify = identify
 discord.gateway.DiscordWebSocket.identify = identify
-# комментарий для того, чтобы на андроиде нормально копировалось 
-
-
-
-###########################
-#          Ping           #
-###########################
 
 @bot.command()
 async def ping(ctx):
      await ctx.send(f'Пинг бота:  {round(bot.latency * 1000)}ms')
- 
-###########################
-#        Статистика           #
-###########################
 
 @bot.command()
 async def stats(ctx):
@@ -197,9 +164,6 @@ async def stats(ctx):
     embed.set_footer(text=f"{bot.user.name}")
     await ctx.send(embed=embed)
 
-###########################
-#          Eval           #
-###########################
 
 @bot.command()
 async def eval(ctx, *, cmd):
@@ -226,10 +190,9 @@ async def eval(ctx, *, cmd):
 
     cmd = cmd.strip("` ")
 
-    # add a layer of indentation
     cmd = "\n".join(f"    {i}" for i in cmd.splitlines())
 
-    # wrap in async def body
+
     body = f"async def {fn_name}():\n{cmd}"
 
     parsed = ast.parse(body)
@@ -249,9 +212,7 @@ async def eval(ctx, *, cmd):
     result = (await eval(f"{fn_name}()", env))
     await ctx.send(result)
 
-###########################
-#      Изобр Лисы         #
-###########################
+
 
 @bot.command()
 async def fox(ctx):
@@ -263,9 +224,6 @@ async def fox(ctx):
     print("Выполнена команда f!fox")
     await ctx.send(embed = embed) # Отправляем Embed
 
-###########################
-#     Изобр Собаки        #
-###########################
 
 @bot.command()
 async def dog(ctx):
@@ -277,9 +235,7 @@ async def dog(ctx):
     print("Выполнена команда f!dog")
     await ctx.send(embed = embed) # Отправляем Embed    
 
-###########################
-#      Изобр Кота         #
-###########################
+
 
 @bot.command()
 async def cat(ctx):
@@ -291,9 +247,7 @@ async def cat(ctx):
     print("Выполнена команда f!cat")
     await ctx.send(embed = embed) # Отправляем Embed
 
-###########################
-#     Очистика сооб       #
-###########################
+
 
 @bot.command()
 @commands.has_permissions(manage_messages=True, kick_members=True)
@@ -307,9 +261,7 @@ async def clear(ctx, amount=1):
 async def clear_error(ctx, error):
     await ctx.send( 'У Вас недостаточно прав для использования этой команды!' '\n' 'Недостающее право: Управлять сообщениями.' )
 
-###########################
-#         ПОМОЩЬ          #
-###########################
+
 
 @bot.command()
 async def helps(ctx):
@@ -349,9 +301,6 @@ async def is_owner(ctx):
 def user_is_me(ctx):
     return ctx.message.author.id == "599667143075823683" 
 
-##########################
-#   Сооб от имени бота    #
-###########################
 
 @bot.command()
 @commands.has_permissions( manage_messages = True )
@@ -363,9 +312,7 @@ async def say(ctx, *, arg, amount = 1):
 async def say_error(ctx, error):
     await ctx.send( 'У Вас недостаточно прав для использования этой команды!' '\n' 'Недостающее право: Управлять сообщениями' '\n' 'Либо вы забыли указать аргументы(тоесть текст) - f!say text')
 
-###########################
-#     Инвайт сылкка       #
-###########################
+
 
 @bot.command()
 async def invite(ctx):
@@ -376,9 +323,6 @@ async def invite(ctx):
         colour = discord.Colour.from_rgb(106, 192, 245))
     await ctx.send(embed = message_help)
 
-###########################
-#       Mute/Unmute       #
-###########################
 
 @bot.command(description="Mutes the specified user.")
 @commands.has_permissions(manage_messages=True, kick_members=True)
@@ -413,8 +357,6 @@ async def unmute(ctx, member: discord.Member):
 async def unmute_error(ctx, error):
     await ctx.send( 'У Вас недостаточно прав для использования этой команды!' '\n' 'Недостающее право: Управлять сообщениями, Кикать участников.' )
 
-###########################
-#      Логин бота         #
-###########################
+
 
 bot.run(settings['token'])
