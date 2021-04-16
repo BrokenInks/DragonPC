@@ -46,7 +46,7 @@ def insert_returns(body):
     if isinstance(body[-1], ast.With):
         insert_returns(body[-1].body)
 
-@bot.command(aliases = ["avatar", "Avatar", "Аватар"])
+@bot.command()
 async def avatar(ctx, *, avamember: discord.Member):
     emb = discord.Embed(title = f"Аватар {avamember.name}", colour = discord.Color.red())
     emb.set_image(url = avamember.avatar_url)
