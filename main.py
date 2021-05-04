@@ -16,6 +16,12 @@ from tabulate import tabulate
 from config import settings
 from discord.ext import commands
 from config import settings
+import asyncio
+import io
+
+
+import textwrap
+from traceback import format_exception
 
 bot = commands.Bot(command_prefix = settings['prefix'])
 bot.remove_command( "help" )
@@ -24,7 +30,7 @@ print("Бот загружается...")
 
 @bot.event
 async def on_ready():
-		await bot.change_presence(status = discord.Status.online, activity= discord.Activity(name=f'Музыку', type= discord.ActivityType.listening))
+		await bot.change_presence(status = discord.Status.online, activity= discord.Activity(name=f'Музыку || d!helps', type= discord.ActivityType.listening))
 		for guild in bot.guilds:
 				print ("      Сервера На Которых Есть Бот:")
 				print ("   SERVER:", guild.name)
@@ -164,53 +170,16 @@ async def stats(ctx):
     embed.set_footer(text=f"{bot.user.name}")
     await ctx.send(embed=embed)
 
+def is_owner():
+    async def predicate(ctx):
+        return ctx.author.id == 599667143075823683
+    return commands.check(predicate)
 
-@bot.command()
-async def eval(ctx, *, cmd):
-    """Evaluates input.
-    Input is interpreted as newline seperated statements.
-    If the last statement is an expression, that is the return value.
-    Usable globals:
-      - `bot`: the bot instance
-      - `discord`: the discord module
-      - `commands`: the discord.ext.commands module
-      - `ctx`: the invokation context
-      - `__import__`: the builtin `__import__` function
-    Such that `>eval 1 + 1` gives `2` as the result.
-    The following invokation will cause the bot to send the text '9'
-    to the channel of invokation and return '3' as the result of evaluating
-    >eval ```
-    a = 1 + 2
-    b = a * 2
-    await ctx.send(a + b)
-    a
-    ```
-    """
-    fn_name = "_eval_expr"
-
-    cmd = cmd.strip("` ")
-
-    cmd = "\n".join(f"    {i}" for i in cmd.splitlines())
-
-
-    body = f"async def {fn_name}():\n{cmd}"
-
-    parsed = ast.parse(body)
-    body = parsed.body[0].body
-
-    insert_returns(body)
-
-    env = {
-        'bot': ctx.bot,
-        'discord': discord,
-        'commands': commands,
-        'ctx': ctx,
-        '__import__': __import__
-    }
-    exec(compile(parsed, filename="<ast>", mode="exec"), env)
-
-    result = (await eval(f"{fn_name}()", env))
-    await ctx.send(result)
+@bot.command(name='eval')
+@is_owner()
+async def _eval(ctx, *, code):
+    """A bad example of an eval command"""
+    await ctx.send(eval(code))
 
 
 
@@ -221,7 +190,7 @@ async def fox(ctx):
 
     embed = discord.Embed(color = 0xff9900, title = 'Рандом Лис') # Создание Embed'a
     embed.set_image(url = json_data['link']) # Устанавливаем картинку Embed'a
-    print("Выполнена команда f!fox")
+    print("Выполнена команда d!fox")
     await ctx.send(embed = embed) # Отправляем Embed
 
 
@@ -232,7 +201,7 @@ async def dog(ctx):
 
     embed = discord.Embed(color = 0xff9900, title = 'Рандом Собачки') # Создание Embed'a
     embed.set_image(url = json_data['link']) # Устанавливаем картинку Embed'a
-    print("Выполнена команда f!dog")
+    print("Выполнена команда d!dog")
     await ctx.send(embed = embed) # Отправляем Embed    
 
 
@@ -244,7 +213,7 @@ async def cat(ctx):
 
     embed = discord.Embed(color = 0xff9900, title = 'Рандом Котёнка') # Создание Embed'a
     embed.set_image(url = json_data['link']) # Устанавливаем картинку Embed'a
-    print("Выполнена команда f!cat")
+    print("Выполнена команда d!cat")
     await ctx.send(embed = embed) # Отправляем Embed
 
 
@@ -256,7 +225,7 @@ async def clear(ctx, amount=1):
     await ctx.send(f'Очищено {amount} сообщений')
     if ctx.message.author.guild_permissions.manage_messages:
         await channel.purge(limit=amount, check=None, bulk=True)
-        print(f'Выполнена комманда f!clear {amount}')
+        print(f'Выполнена комманда d!clear {amount}')
 @clear.error
 async def clear_error(ctx, error):
     await ctx.send( 'У Вас недостаточно прав для использования этой команды!' '\n' 'Недостающее право: Управлять сообщениями.' )
@@ -269,28 +238,28 @@ async def helps(ctx):
         description = '''
         **Основное**
 
-        `f!fox` - Рандомное изображение кота😸
-        `f!dog` - Рандомное изображение собаки🐕
-        `f!cat` - Рандомное изображение лисы🦊
-        `f!avatar` - Аватар пользователя
+        `d!cat` - Рандомное изображение кота😸
+        `d!dog` - Рандомное изображение собаки🐕
+        `d!fox` - Рандомное изображение лисы🦊
+        `d!avatar` - Аватар пользователя
 
         **Информация**
 
-        `f!stats` - Статистика бота
-        `f!ping` - Информация о пинге бота
-        `f!info` - Информация о боте
-        `f!server` - Информация о сервере
-        `f!invite` - Узнать ссылку приглашения бота на сервер
+        `d!stats` - Статистика бота
+        `d!ping` - Информация о пинге бота
+        `d!info` - Информация о боте
+        `d!server` - Информация о сервере
+        `d!invite` - Узнать ссылку приглашения бота на сервер
 
         **Модерационное **
 
-        `f!mute <@user> reason` - Дать наказание участнику в виде мута
-        `f!unmute <@user>` - Снять наказание в виде мута
-        `f!clear` - Очищение сообщений
-        `f!say <message>` - Отправить сообщение от бота 🌐
+        `d!mute <@user> reason` - Дать наказание участнику в виде мута
+        `d!unmute <@user>` - Снять наказание в виде мута
+        `d!clear` - Очищение сообщений
+        `d!say <message>` - Отправить сообщение от бота 🌐
 
         **Для Создателя**
-        `f!eval` - eval command
+        `d!eval` - eval command
         *©Автор BrokenInk, все права замяуканны. 2021-2022*''',
         colour = discord.Colour.from_rgb(106, 192, 245))
     await ctx.send(embed = message_help)
@@ -310,7 +279,7 @@ async def say(ctx, *, arg, amount = 1):
 
 @say.error
 async def say_error(ctx, error):
-    await ctx.send( 'У Вас недостаточно прав для использования этой команды!' '\n' 'Недостающее право: Управлять сообщениями' '\n' 'Либо вы забыли указать аргументы(тоесть текст) - f!say text')
+    await ctx.send( 'У Вас недостаточно прав для использования этой команды!' '\n' 'Недостающее право: Управлять сообщениями' '\n' 'Либо вы забыли указать аргументы(тоесть текст) - d!say text')
 
 
 
@@ -358,5 +327,10 @@ async def unmute_error(ctx, error):
     await ctx.send( 'У Вас недостаточно прав для использования этой команды!' '\n' 'Недостающее право: Управлять сообщениями, Кикать участников.' )
 
 
+def clean_code(content):
+    if content.startswith("```") and content.endswith("```"):
+        return "\n".join(content.split("\n")[1:])[:-3]
+    else:
+        return content
 
 bot.run(settings['token'])
