@@ -1,7 +1,7 @@
 settings = {
-    'token': 'ODIzMTUzMzEwMTUyMjYxNjM0.YFcrQg._52Se318K1DPeKYfcGeAvP0nTH0',
-    'bot': 'FunRival',
+    'token': 'ODM2OTQ5MzQ5MDMxMjE1MTc0.YIlb0g._YJ0peHaakAqlAK9HjvDeJ61K0U',
+    'bot': 'Dragon-V',
     'owner' '599667143075823683'
-    'id': 823153310152261634,
-    'prefix': 'f!'
+    'id': 836949349031215174,
+    'prefix': 'd!'
 }
