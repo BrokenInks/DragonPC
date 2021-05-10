@@ -368,5 +368,5 @@ def clean_code(content):
         return "\n".join(content.split("\n")[1:])[:-3]
     else:
         return content
-
+#xd
 bot.run(settings['token'])
