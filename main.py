@@ -41,6 +41,13 @@ Cluster = MongoClient('mongodb+srv://luhhtuuk:Froog2020d@cluster0.eavxh.mongodb.
 collusers = Cluster.warnsdb.collusers
 collservers = Cluster.warnsdb.collservers
 
+@bot.event
+async def on_ready():
+        await bot.change_presence(status = discord.Status.idle, activity = discord.Activity( type =discord.ActivityType.listening, name = f"Музыку || {prefixintial}helps"))
+        for guild in bot.guilds:
+                print ("      Сервера На Которых Есть Бот:")
+                print ("   SERVER:", guild.name)
+                print ("   ID:", guild.id)
 print (" Bot connected to discord")
 
                     
