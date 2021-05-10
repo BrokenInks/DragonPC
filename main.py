@@ -37,7 +37,7 @@ bot.remove_command( "help" )
 
 print("Бот загружается...")
 
-Cluster = Mongobot('mongodb+srv://luhhtuuk:Froog2020d@cluster0.eavxh.mongodb.net/testdata?retryWrites=true&w=majority')
+Cluster = MongoClient('mongodb+srv://luhhtuuk:Froog2020d@cluster0.eavxh.mongodb.net/testdata?retryWrites=true&w=majority')
 db = Cluster["testdata"]
 collection = Cluster["testcoll"]
 
