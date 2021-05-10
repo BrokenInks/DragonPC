@@ -41,100 +41,15 @@ Cluster = MongoClient('mongodb+srv://luhhtuuk:Froog2020d@cluster0.eavxh.mongodb.
 db = Cluster["testdata"]
 collection = Cluster["testcoll"]
 
-@tasks.loop(seconds=12.0) #Создаем повторную типо исполнение указываем seconds=12.0 либо можно minutes=12 ну как то так
-async def printer():
-    nds = datetime.datetime.now()
-    now_time = nds.strftime(" = %H:%M:%S =")
-    await bot.change_presence( status = discord.Status.idle, activity = discord.Activity( type=discord.ActivityType.watching, name = f"{now_time}" ))
-    await asyncio.sleep(6)
-    await bot.change_presence( status = discord.Status.idle, activity=discord.Activity( type=discord.ActivityType.watching, name = "за тобой") )
-
-
 @bot.event
-async def on_command_error(ctx, err):
-    if isinstance(err, errors.CommandNotFound):
-        Err1 = await ctx.send(embed=discord.Embed(description=f"Команда не найдена!"))
-        await asyncio.sleep(6)
-        await Err1.delete()
+async def on_ready():
+        await bot.change_presence(status = discord.Status.online, activity= discord.Activity(name=f'Музыку || d!helps', type= discord.ActivityType.listening))
+        for guild in bot.guilds:
+                print ("      Сервера На Которых Есть Бот:")
+                print ("   SERVER:", guild.name)
+                print ("   ID:", guild.id)
+print (" Bot connected to discord")
 
-    elif isinstance(err, errors.BotMissingPermissions):
-        Err2 = await ctx.send(
-            embed=discord.Embed(description=f"У бота отсутствуют права: {' '.join(err.missing_perms)}\nВыдайте их ему для полного функционирования бота"))
-        await asyncio.sleep(6)
-        await Err2.delete()
-
-    elif isinstance(err, errors.MissingPermissions):
-        Err3 = await ctx.send(embed=discord.Embed(description=f"У вас недостаточно прав для запуска этой команды!"))
-        await asyncio.sleep(6)
-        await Err3.delete()
-
-    elif isinstance(err, errors.UserInputError):
-        Err4 = await ctx.send(embed=discord.Embed(description=f"Правильное использование команды {ctx.command}({ctx.command.brief}): `{ctx.command.usage}`"))
-        await asyncio.sleep(6)
-        await Err4.delete()
-
-    elif isinstance(err, commands.CommandOnCooldown):
-        Err5 = await ctx.send(embed=discord.Embed(description=f"У вас еще не прошел кулдаун на команду {ctx.command}!\nПодождите еще {err.retry_after:.2f}"))
-        await asyncio.sleep(6)
-        await Err5.delete()
-
-    elif isinstance(err, dpy_errors.Forbidden):
-        Err6 = await ctx.send(embed=discord.Embed(description=f"У бота нет прав на запуск этой команды!"))
-        await asyncio.sleep(6)
-        await Err6.delete()
-    else:
-        Err7 = await ctx.send(embed=discord.Embed(description=f"Произошла неизвестная ошибка: `{err}`\nПожалуйста, свяжитесь с разработчиками для исправления этой ошибки"))
-        await asyncio.sleep(6)
-        await Err7.delete()
-
-
-@bot.event
-async def on_guild_join(guild):
-    print(" ")
-    print("==============================================")
-    print("[GUILD]   Бот присоединился к серверу!          ")
-    print("[GUILD]   Информация о сервере                  ")
-    print("==============================================")
-    print(f'[GUILD]  Сервер           - {guild.name}       ')
-    print(f'[GUILD]  Владелец сервера - {guild.owner}      ')
-    print(f'[GUILD]  ID бота          - {guild.id}         ')
-    print(f'[GUILD]  Расположение сервер - {guild.region}  ')
-    print("==============================================")
-    print(" ")
-    embed = discord.Embed(
-            title=("Help QubitCare silental"),
-            description=f"Добрый день!\n\n Вы получили это сообщение т.к на ваш сервер **{guild.name}** был добавлен QubitCare BOT.\nЭто чисто информативное сообщение, сделанное для того, чтобы вы знали немного больше о том, чем пользуетесь.",
-            color=0x800080
-        )
-    embed.add_field(
-            name="Полезная информация:",
-            value=f"Информация: \n Бот имеет префикс: > . < (Точка) \n Бот сейчас не стоит на хостинге \n Ида для просмтора списка команды видите .help \n Так же ознакомтесь с мануалом для бота .manual "
-        )
-    embed.set_footer(
-            text='QubitCare series > Silental <',
-            icon_url=bot.user.avatar_url
-        )
-    overwrites = {
-    guild.default_role: discord.PermissionOverwrite(read_messages=False),
-    guild.me: discord.PermissionOverwrite(read_messages=True)
-    }
-    channel2 = await guild.create_text_channel('QubitCare Silental', overwrites=overwrites, position = 1)
-    await channel2.send(embed=embed)
-    perms = discord.Permissions(send_messages=False)
-    await guild.create_role(name="Мут", permissions=perms)
-    channel_id = 773488503283515432
-    channel = bot.get_channel(channel_id)
-    inf = discord.Embed(
-            title=f"Бот присоединился к серверу {guild.name}",
-            description=f"**Информация о сервере:**\n\nСервер - {guild.name}\nID сервера - {guild.id}\nВладелец сервера - {guild.owner} \nСозданый канал ботом! None \n Регион сервера: {guild.region} \n Роли: \n {guild.roles}",
-        )
-    await channel.send(embed=inf)
-
-
-#Привет от бота
-@bot.command() # Означает для выполнения команды
-async def Hello(ctx): # Сделать функцию с именем (Используем метод ctx)
-    await ctx.send(f"Привет \n пока") #Отправка сообщения |  \n - Отступ на след. сторку.
                     
 def insert_returns(body):
  
@@ -408,7 +323,7 @@ async def say_error(ctx, error):
 async def invite(ctx):
     message_help = discord.Embed(
         description = '''
-        Чтобы добавить меня на свой сервер, [Нажми сюда!](https://discord.com/api/oauth2/authorize?bot_id=823153310152261634&permissions=8&scope=bot)
+        Чтобы добавить меня на свой сервер, [Нажми сюда!](https://discord.com/api/oauth2/authorize?client_id=823153310152261634&permissions=8&scope=bot)
         *©Автор BrokenInk, все права замяуканны. 2021-2022*''',
         colour = discord.Colour.from_rgb(106, 192, 245))
     await ctx.send(embed = message_help)
@@ -453,5 +368,5 @@ def clean_code(content):
         return "\n".join(content.split("\n")[1:])[:-3]
     else:
         return content
-#xd
+
 bot.run(settings['token'])
