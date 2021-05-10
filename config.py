@@ -3,5 +3,4 @@ settings = {
     'bot': 'Dragon-V',
     'owner' '599667143075823683'
     'id': 836949349031215174,
-    'prefix': 'd!'
 }

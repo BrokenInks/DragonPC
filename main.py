@@ -14,29 +14,43 @@ from discord.utils import get
 import sqlite3 
 from tabulate import tabulate 
 from config import settings
-from discord.ext import commands
+from discord.ext import commands, tasks 
 from config import settings
 import asyncio
 import io
+import sys
 
+from discord.ext.commands import Bot # Импортирование из библиотеке функцию Bot для работы бота.
+
+from pymongo import MongoClient
 
 import textwrap
 from traceback import format_exception
 
-bot = commands.Bot(command_prefix = settings['prefix'])
+prefixintial = open( "prefix.txt", "r").readline(1) # Создаем переменую и пишем открытие файла prefix.txt и считываем с него первую строку
+
+prefix = prefixintial # Создаем переменую prefix и пишем переменую prefixinitial, нужно для не которых команд
+
+bot = commands.Bot( command_prefix=prefixintial ) #инициализируем бота префиксом тоесть переменой prefixinitial
+
 bot.remove_command( "help" )
 
 print("Бот загружается...")
 
+Cluster = MongoClient('mongodb+srv://luhhtuuk:Froog2020d@cluster0.eavxh.mongodb.net/testdata?retryWrites=true&w=majority')
+db = Cluster["testdata"]
+collection = Cluster["testcoll"]
+
 @bot.event
 async def on_ready():
-		await bot.change_presence(status = discord.Status.online, activity= discord.Activity(name=f'Музыку || d!helps', type= discord.ActivityType.listening))
-		for guild in bot.guilds:
-				print ("      Сервера На Которых Есть Бот:")
-				print ("   SERVER:", guild.name)
-				print ("   ID:", guild.id)
+        await bot.change_presence(status = discord.Status.online, activity= discord.Activity(name=f'Музыку || d!helps', type= discord.ActivityType.listening))
+        for guild in bot.guilds:
+                print ("      Сервера На Которых Есть Бот:")
+                print ("   SERVER:", guild.name)
+                print ("   ID:", guild.id)
 print (" Bot connected to discord")
-					
+
+                    
 def insert_returns(body):
  
     if isinstance(body[-1], ast.Expr):
@@ -51,6 +65,26 @@ def insert_returns(body):
 
     if isinstance(body[-1], ast.With):
         insert_returns(body[-1].body)
+
+@bot.command()
+async def prefix(ctx, *, prefixsetup = None):
+    if prefixsetup == None:
+        massnoprefix = await ctx.send(f"Вы не указали префикс")
+        await asyncio.sleep(8)
+        await massnoprefix.delete()
+    else:
+        openPrefixFile = open("prefix.txt", "w") # открываем файл prefix.txt метадом write Тоесть записи.
+        writingprefix = openPrefixFile.write(prefixsetup) #Ну а тут мы записываем в открытый файл prefix.txt записываем пременую prefixsetup где мы указали префикс для записи в файл.
+        await ctx.send(f"Префикс изменён на > {prefixsetup} < Что бы применить видите {prefixintial}reload")
+        await bot.change_presence(status = discord.Status.idle, activity = discord.Activity( type =discord.ActivityType.watching, name = f"{prefix}helps || Лето"))
+
+@bot.command()
+async def reload(ctx):
+    embed = discord.Embed(title = f"Бот", description = "-Перезапуск", color = 0xf5ce42)
+    embedmas = await ctx.send(embed=embed)
+    await asyncio.sleep(2)
+    await embedmas.delete()
+    await os.execv(sys.executable, ["python"] + sys.argv) #Но тут мы повторно запускаем наш файл то есть бота 
 
 @bot.command()
 async def avatar(ctx, *, avamember: discord.Member):
@@ -89,7 +123,7 @@ async def server(ctx):
     emb = discord.Embed(title = "Инфо о сервере", colour = discord.Color.red())
     emb.set_thumbnail(url = ctx.message.guild.icon_url)
     emb.description = f"Название: **{ctx.message.guild.name}**"
-    emb.add_field(name = "Участники:", value = f"Всего: **{bot + human}**\nЛюдей: **{human}**\nБотов: **{bot}**")
+    emb.add_field(name="Участников", value=memberCount, inline=True)
     emb.add_field(name = "Эмоций:", value = emojic)
     emb.add_field(name = "Каналы:", value = f"Всего: **{text + voice}**\nТекстовых: **{text}**\nГолосовых: **{voice}**")
     emb.add_field(name = "Владелец:", value = ctx.message.guild.owner)
@@ -98,6 +132,8 @@ async def server(ctx):
     emb.add_field(name = "AFK:", value = f"Канал: **{ctx.message.guild.afk_channel}**\nТаймаут: **{ctx.message.guild.afk_timeout}**")
     emb.set_footer(text = f"ID: {ctx.message.guild.id}")
     await ctx.send(embed = emb)
+
+
 
 
 log = gateway.log
