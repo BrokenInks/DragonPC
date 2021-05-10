@@ -76,7 +76,7 @@ async def prefix(ctx, *, prefixsetup = None):
         openPrefixFile = open("prefix.txt", "w") # открываем файл prefix.txt метадом write Тоесть записи.
         writingprefix = openPrefixFile.write(prefixsetup) #Ну а тут мы записываем в открытый файл prefix.txt записываем пременую prefixsetup где мы указали префикс для записи в файл.
         await ctx.send(f"Префикс изменён на > {prefixsetup} < Что бы применить видите {prefixintial}reload")
-        await bot.change_presence(status = discord.Status.idle, activity = discord.Activity( type =discord.ActivityType.watching, name = f"{prefix}helps || Лето"))
+        await bot.change_presence(status = discord.Status.idle, activity = discord.Activity( type =discord.ActivityType.watching, name = f"{prefixintial}helps || Лето"))
 
 @bot.command()
 async def reload(ctx):
