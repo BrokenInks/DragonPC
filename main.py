@@ -31,23 +31,16 @@ prefixintial = open( "prefix.txt", "r").readline(1) # Создаем перем�
 
 prefix = prefixintial # Создаем переменую prefix и пишем переменую prefixinitial, нужно для не которых команд
 
-bot = commands.Bot( command_prefix=prefixintial ) #инициализируем бота префиксом тоесть переменой prefixinitial
+bot = commands.Bot( command_prefix=prefixintial, intents=discord.Intents.all()) #инициализируем бота префиксом тоесть переменой prefixinitial
 
 bot.remove_command( "help" )
 
 print("Бот загружается...")
 
 Cluster = MongoClient('mongodb+srv://luhhtuuk:Froog2020d@cluster0.eavxh.mongodb.net/testdata?retryWrites=true&w=majority')
-db = Cluster["testdata"]
-collection = Cluster["testcoll"]
+collusers = Cluster.warnsdb.collusers
+collservers = Cluster.warnsdb.collservers
 
-@bot.event
-async def on_ready():
-        await bot.change_presence(status = discord.Status.online, activity= discord.Activity(name=f'Музыку || d!helps', type= discord.ActivityType.listening))
-        for guild in bot.guilds:
-                print ("      Сервера На Которых Есть Бот:")
-                print ("   SERVER:", guild.name)
-                print ("   ID:", guild.id)
 print (" Bot connected to discord")
 
                     
@@ -226,7 +219,7 @@ async def fox(ctx):
 
     embed = discord.Embed(color = 0xff9900, title = 'Рандом Лис') # Создание Embed'a
     embed.set_image(url = json_data['link']) # Устанавливаем картинку Embed'a
-    print("Выполнена команда d!fox")
+    print("Выполнена команда {prefixintial}fox")
     await ctx.send(embed = embed) # Отправляем Embed
 
 
@@ -237,7 +230,7 @@ async def dog(ctx):
 
     embed = discord.Embed(color = 0xff9900, title = 'Рандом Собачки') # Создание Embed'a
     embed.set_image(url = json_data['link']) # Устанавливаем картинку Embed'a
-    print("Выполнена команда d!dog")
+    print("Выполнена команда {prefixintial}dog")
     await ctx.send(embed = embed) # Отправляем Embed    
 
 
@@ -249,7 +242,7 @@ async def cat(ctx):
 
     embed = discord.Embed(color = 0xff9900, title = 'Рандом Котёнка') # Создание Embed'a
     embed.set_image(url = json_data['link']) # Устанавливаем картинку Embed'a
-    print("Выполнена команда d!cat")
+    print("Выполнена команда {prefixintial}cat")
     await ctx.send(embed = embed) # Отправляем Embed
 
 
@@ -261,7 +254,7 @@ async def clear(ctx, amount=1):
     await ctx.send(f'Очищено {amount} сообщений')
     if ctx.message.author.guild_permissions.manage_messages:
         await channel.purge(limit=amount, check=None, bulk=True)
-        print(f'Выполнена комманда d!clear {amount}')
+        print(f'Выполнена комманда {prefixintial}clear {amount}')
 @clear.error
 async def clear_error(ctx, error):
     await ctx.send( 'У Вас недостаточно прав для использования этой команды!' '\n' 'Недостающее право: Управлять сообщениями.' )
@@ -271,31 +264,31 @@ async def clear_error(ctx, error):
 @bot.command()
 async def helps(ctx):
     message_help = discord.Embed(
-        description = '''
+        description = f'''
         **Основное**
 
-        `d!cat` - Рандомное изображение кота😸
-        `d!dog` - Рандомное изображение собаки🐕
-        `d!fox` - Рандомное изображение лисы🦊
-        `d!avatar` - Аватар пользователя
+        `{prefixintial}cat` - Рандомное изображение кота😸
+        `{prefixintial}dog` - Рандомное изображение собаки🐕
+        `{prefixintial}fox` - Рандомное изображение лисы🦊
+        `{prefixintial}avatar` - Аватар пользователя
 
         **Информация**
 
-        `d!stats` - Статистика бота
-        `d!ping` - Информация о пинге бота
-        `d!info` - Информация о боте
-        `d!server` - Информация о сервере
-        `d!invite` - Узнать ссылку приглашения бота на сервер
+        `{prefixintial}stats` - Статистика бота
+        `{prefixintial}ping` - Информация о пинге бота
+        `{prefixintial}info` - Информация о боте
+        `{prefixintial}server` - Информация о сервере
+        `{prefixintial}invite` - Узнать ссылку приглашения бота на сервер
 
         **Модерационное **
 
-        `d!mute <@user> reason` - Дать наказание участнику в виде мута
-        `d!unmute <@user>` - Снять наказание в виде мута
-        `d!clear` - Очищение сообщений
-        `d!say <message>` - Отправить сообщение от бота 🌐
+        `{prefixintial}mute <@user> reason` - Дать наказание участнику в виде мута
+        `{prefixintial}unmute <@user>` - Снять наказание в виде мута
+        `{prefixintial}clear` - Очищение сообщений
+        `{prefixintial}say <message>` - Отправить сообщение от бота 🌐
 
         **Для Создателя**
-        `d!eval` - eval command
+        `{prefixintial}eval` - eval command
         *©Автор BrokenInk, все права замяуканны. 2021-2022*''',
         colour = discord.Colour.from_rgb(106, 192, 245))
     await ctx.send(embed = message_help)
@@ -315,7 +308,7 @@ async def say(ctx, *, arg, amount = 1):
 
 @say.error
 async def say_error(ctx, error):
-    await ctx.send( 'У Вас недостаточно прав для использования этой команды!' '\n' 'Недостающее право: Управлять сообщениями' '\n' 'Либо вы забыли указать аргументы(тоесть текст) - d!say text')
+    await ctx.send( 'У Вас недостаточно прав для использования этой команды!' '\n' 'Недостающее право: Управлять сообщениями' '\n' 'Либо вы забыли указать аргументы(тоесть текст) - {prefixintial}say text')
 
 
 
