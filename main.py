@@ -22,7 +22,7 @@ import sys
 
 from discord.ext.commands import Bot # Импортирование из библиотеке функцию Bot для работы бота.
 
-from pymongo import Mongobot
+from pymongo import MongoClient
 
 import textwrap
 from traceback import format_exception
