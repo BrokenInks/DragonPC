@@ -323,7 +323,7 @@ async def say_error(ctx, error):
 async def invite(ctx):
     message_help = discord.Embed(
         description = '''
-        Чтобы добавить меня на свой сервер, [Нажми сюда!](https://discord.com/api/oauth2/authorize?client_id=823153310152261634&permissions=8&scope=bot)
+        Чтобы добавить меня на свой сервер, [Нажми сюда!](https://discord.com/api/oauth2/authorize?client_id=836949349031215174&permissions=8&scope=bot)
         *©Автор BrokenInk, все права замяуканны. 2021-2022*''',
         colour = discord.Colour.from_rgb(106, 192, 245))
     await ctx.send(embed = message_help)
@@ -339,7 +339,7 @@ async def mute(ctx, member: discord.Member, *, reason=None):
         mutedRole = await guild.create_role(name="「🛑」Наказан")
 
         for channel in guild.channels:
-            await channel.set_permissions(mutedRole, speak=False, send_messages=False, read_message_history=True, read_messages=False)
+            await channel.set_permissions(mutedRole, speak=False, send_messages=False)
     embed = discord.Embed(title="Авто-Модерация", description=f"Участнику: {member.mention} было выдано наказание ввиде мута", colour=discord.Colour.red())
     embed.add_field(name="Причина:", value=reason, inline=False)
     await ctx.send(embed=embed)
